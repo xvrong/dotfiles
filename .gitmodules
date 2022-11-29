@@ -1,0 +1,6 @@
+[submodule ".config/awesome/sharedtags"]
+	path = .config/awesome/sharedtags
+	url = git@github.com:Drauthius/awesome-sharedtags.git
+[submodule ".config/nvim"]
+	path = .config/nvim
+	url = git@github.com:AstroNvim/AstroNvim.git
