@@ -1,9 +1,6 @@
 [submodule ".config/awesome/sharedtags"]
 	path = .config/awesome/sharedtags
 	url = git@github.com:Drauthius/awesome-sharedtags.git
-[submodule ".config/nvim"]
-	path = .config/nvim
-	url = git@github.com:AstroNvim/AstroNvim.git
 [submodule ".config/rofi/rofi-translate"]
 	path = .config/rofi/rofi-translate
 	url = git@github.com:xvrong/rofi-translate.git
