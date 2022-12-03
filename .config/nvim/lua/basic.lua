@@ -17,3 +17,5 @@ o.softtabstop = 4
 -- 自动确定下一行缩进
 o.autoindent = true
 o.smartindent = true
+
+o.clipboard:append("unnamedplus")
