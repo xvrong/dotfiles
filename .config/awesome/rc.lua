@@ -152,7 +152,8 @@ connect_screen()
 local autorun = {
     app = {
         "fcitx5",
-        "flameshot"
+        "flameshot",
+        "picom"
     }, 
     cmd = {
         "~/Projects/Script/python_venv/bin/python ~/Projects/Script/link_dlut.py",
