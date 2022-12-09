@@ -31,10 +31,10 @@ EnumerateSkipFirst=False
 0=Hangul_Romaja
 
 [Hotkey/PrevPage]
-0=apostrophe
+0=comma
 
 [Hotkey/NextPage]
-0=semicolon
+0=period
 
 [Hotkey/PrevCandidate]
 0=Shift+Tab
