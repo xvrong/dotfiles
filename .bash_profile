@@ -26,6 +26,6 @@ export SDL_IM_MODULE=fcitx
 if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]];
 then
   sudo /usr/bin/prime-switch
-  exec startx $XINITRC -- $XSERVERRC vt1
+  exec startx $XINITRC -- $XSERVERRC
 fi
 
