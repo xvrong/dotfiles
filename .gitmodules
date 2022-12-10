@@ -4,3 +4,6 @@
 [submodule ".config/rofi/rofi-translate"]
 	path = .config/rofi/rofi-translate
 	url = git@github.com:xvrong/rofi-translate.git
+[submodule "/home/xv_rong/.config/ranger/plugins/ranger_devicons"]
+	path = /home/xv_rong/.config/ranger/plugins/ranger_devicons
+	url = https://github.com/alexanderjeurissen/ranger_devicons.git
