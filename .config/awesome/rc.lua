@@ -152,7 +152,6 @@ connect_screen()
 local autorun = {
     app = {
         "fcitx5",
-        "flameshot",
         "picom"
     }, 
     cmd = {
