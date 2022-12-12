@@ -21,6 +21,8 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
+awful.screen.set_auto_dpi_enabled(true)
+
 local xrandr = require("xrandr")
 -- {{{ Autostart
 local is_restart
@@ -43,53 +45,12 @@ do
     end
 end
 
--- connect_screen
-local function connect_screen()
-    local function get_outputs()
-        local outputs = {}
-        local xrandr = io.popen("xrandr -q --current")
-
-        if xrandr then
-            for line in xrandr:lines() do
-                local output = line:match("^([%w-]+) connected ")
-                if output then
-                    outputs[#outputs + 1] = output
-                end
-            end
-            xrandr:close()
-        end
-
-        return outputs
-    end
-
-    local outputs = get_outputs()
-
-    local cmds = {}
-
-    if is_restart() then
-        table.insert(cmds, "xrandr --output " .. table.concat(outputs, " --output ") .. " --off")
-    end
-
-    if #outputs == 2 then
-        table.insert(cmds,
-            "xrandr --dpi 96 --output HDMI-0 --mode 1920x1080 --rate 60 --pos 0x0 --primary --output eDP-1-1 --mode 1920x1080 --rate 120 --pos 1920x0")
-    else
-        table.insert(cmds, "xrandr --dpi 96 --output eDP-1-1 --mode 1920x1080 --rate 120 --primary")
-    end
-
-    for cmd = 1, #cmds do
-        awful.spawn(cmds[cmd], false)
-    end
-end
-
-connect_screen()
-
 local autorun = {
     app = {
-        "fcitx5",
-        "picom"
     },
     cmd = {
+        "fcitx5",
+        "picom --daemon",
         "~/Projects/Script/python_venv/bin/python ~/Projects/Script/link_dlut.py",
         "greenclip daemon"
     }
@@ -104,6 +65,10 @@ if not is_restart() then
     for i = 1, #autorun.cmd do
         awful.spawn.with_shell(autorun.cmd[i])
     end
+end
+
+if is_restart() then
+    awful.spawn.with_shell("$XDG_CONFIG_HOME/script/display.sh")
 end
 -- }}}
 
@@ -181,7 +146,7 @@ end)
 -- {{{ Wibar
 
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
+mytextclock = wibox.widget.textclock(" %b%d %T", 0.9)
 
 local sharedtags = require("sharedtags")
 local tags = sharedtags({
@@ -192,7 +157,6 @@ local tags = sharedtags({
 })
 
 screen.connect_signal("request::desktop_decoration", function(s)
-    awful.tag({}, s, awful.layout.layouts[1])
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
 
@@ -207,7 +171,6 @@ screen.connect_signal("request::desktop_decoration", function(s)
             awful.button({}, 5, function() awful.layout.inc(1) end),
         }
     }
-
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
