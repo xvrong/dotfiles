@@ -22,7 +22,91 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 require("awful.hotkeys_popup.keys")
 
 local xrandr = require("xrandr")
-local sharedtags = require("sharedtags")
+-- {{{ Autostart
+local is_restart
+do
+    local restart_detected
+    is_restart = function()
+        -- If we already did restart detection: Just return the result
+        if restart_detected ~= nil then
+            return restart_detected
+        end
+
+        -- Register a new boolean
+        awesome.register_xproperty("awesome_restart_check", "boolean")
+        -- Check if this boolean is already set
+        restart_detected = awesome.get_xproperty("awesome_restart_check") ~= nil
+        -- Set it to true
+        awesome.set_xproperty("awesome_restart_check", true)
+        -- Return the result
+        return restart_detected
+    end
+end
+
+-- connect_screen
+local function connect_screen()
+    local function get_outputs()
+        local outputs = {}
+        local xrandr = io.popen("xrandr -q --current")
+
+        if xrandr then
+            for line in xrandr:lines() do
+                local output = line:match("^([%w-]+) connected ")
+                if output then
+                    outputs[#outputs + 1] = output
+                end
+            end
+            xrandr:close()
+        end
+
+        return outputs
+    end
+
+    local outputs = get_outputs()
+
+    local cmds = {}
+
+    if is_restart() then
+        table.insert(cmds, "xrandr --output " .. table.concat(outputs, " --output ") .. " --off")
+    end
+
+    if #outputs == 2 then
+        table.insert(cmds,
+            "xrandr --dpi 96 --output HDMI-0 --mode 1920x1080 --rate 60 --pos 0x0 --primary --output eDP-1-1 --mode 1920x1080 --rate 120 --pos 1920x0")
+    else
+        table.insert(cmds, "xrandr --dpi 96 --output eDP-1-1 --mode 1920x1080 --rate 120 --primary")
+    end
+
+    for cmd = 1, #cmds do
+        awful.spawn(cmds[cmd], false)
+    end
+end
+
+connect_screen()
+
+local autorun = {
+    app = {
+        "fcitx5",
+        "picom"
+    },
+    cmd = {
+        "~/Projects/Script/python_venv/bin/python ~/Projects/Script/link_dlut.py",
+        "greenclip daemon"
+    }
+}
+
+
+if not is_restart() then
+    for i = 1, #autorun.app do
+        awful.spawn(autorun.app[i], false)
+    end
+
+    for i = 1, #autorun.cmd do
+        awful.spawn.with_shell(autorun.cmd[i])
+    end
+end
+-- }}}
+
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -99,18 +183,16 @@ end)
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
 
--- local tags = sharedtags({
---     { name = "1 main", layout = awful.layout.layouts[1] },
---     { name = "2 www", screen = 1, layout = awful.layout.layouts[1] },
---     { name = "3 misc", layout = awful.layout.layouts[1] },
---     { name = "4 chat", screen = 2, layout = awful.layout.layouts[1] },
---     { name = "5 note", screen = 2, layout = awful.layout.layouts[1] }
--- })
+local sharedtags = require("sharedtags")
+local tags = sharedtags({
+    { name = "1 main", screen = 1, layout = awful.layout.layouts[1] },
+    { name = "2 www", screen = 2, layout = awful.layout.layouts[1] },
+    { name = "3 misc", screen = 1, layout = awful.layout.layouts[1] },
+    { name = "4 chat", screen = 2, layout = awful.layout.layouts[1] },
+})
 
 screen.connect_signal("request::desktop_decoration", function(s)
-    -- Each screen has its own tag table.
-    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
-
+    awful.tag({}, s, awful.layout.layouts[1])
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
 
@@ -325,9 +407,9 @@ awful.keyboard.append_global_keybindings({
         group       = "tag",
         on_press    = function(index)
             local screen = awful.screen.focused()
-            local tag = screen.tags[index]
+            local tag = tags[index]
             if tag then
-                tag:view_only()
+                sharedtags.viewonly(tag, screen)
             end
         end,
     },
@@ -338,9 +420,9 @@ awful.keyboard.append_global_keybindings({
         group       = "tag",
         on_press    = function(index)
             local screen = awful.screen.focused()
-            local tag = screen.tags[index]
+            local tag = tags[index]
             if tag then
-                awful.tag.viewtoggle(tag)
+                sharedtags.viewtoggle(tag, screen)
             end
         end,
     },
@@ -351,7 +433,7 @@ awful.keyboard.append_global_keybindings({
         group       = "tag",
         on_press    = function(index)
             if client.focus then
-                local tag = client.focus.screen.tags[index]
+                local tag = tags[index]
                 if tag then
                     client.focus:move_to_tag(tag)
                 end
@@ -365,7 +447,7 @@ awful.keyboard.append_global_keybindings({
         group       = "tag",
         on_press    = function(index)
             if client.focus then
-                local tag = client.focus.screen.tags[index]
+                local tag = tags[index]
                 if tag then
                     client.focus:toggle_tag(tag)
                 end
@@ -443,7 +525,16 @@ client.connect_signal("request::default_keybindings", function()
                 c:raise()
             end,
             { description = "(un)maximize horizontally", group = "client" }),
-    })
+    }) -- The first tag defined for each screen will be automatically selected.
+    -- @tparam table def A list of tables with the optional keys `name`, `layout`
+    -- and `screen`. The `name` value is used to name the tag and defaults to the
+    -- list index. The `layout` value sets the starting layout for the tag and
+    -- defaults to the first layout. The `screen` value sets the starting screen
+    -- for the tag and defaults to the first screen. The tags will be sorted in this
+    -- order in the default taglist.
+    -- @treturn table A list of all created tags. Tags are assigned numeric values
+    -- corresponding to the input list, and all tags with non-numerical names are
+    -- also assigned to a key with the same name.
 end)
 
 -- }}}
@@ -490,14 +581,18 @@ ruled.client.connect_signal("request::rules", function()
     ruled.client.append_rule {
         id         = "titlebars",
         rule_any   = { type = { "normal", "dialog" } },
-        properties = { titlebars_enabled = true }
+        properties = { titlebars_enabled = false }
     }
 
-    -- Set Firefox to always map on the tag named "2" on screen 1.
-    -- ruled.client.append_rule {
-    --     rule       = { class = "Firefox"     },
-    --     properties = { screen = 1, tag = "2" }
-    -- }
+    ruled.client.append_rule {
+        rule       = { class = "netease-cloud-music" },
+        properties = { tag = tags[3] }
+    }
+
+    ruled.client.append_rule {
+        rule       = { class = "Microsoft-edge" },
+        properties = { tag = tags[2] }
+    }
 end)
 -- }}}
 
@@ -564,90 +659,3 @@ end)
 client.connect_signal("mouse::enter", function(c)
     c:activate { context = "mouse_enter", raise = false }
 end)
-
-
--- {{{ Autostart
-
-local is_restart
-do
-    local restart_detected
-    is_restart = function()
-        -- If we already did restart detection: Just return the result
-        if restart_detected ~= nil then
-            return restart_detected
-        end
-
-        -- Register a new boolean
-        awesome.register_xproperty("awesome_restart_check", "boolean")
-        -- Check if this boolean is already set
-        restart_detected = awesome.get_xproperty("awesome_restart_check") ~= nil
-        -- Set it to true
-        awesome.set_xproperty("awesome_restart_check", true)
-        -- Return the result
-        return restart_detected
-    end
-end
-
--- connect_screen
-local function connect_screen()
-    local function get_outputs()
-        local outputs = {}
-        local xrandr = io.popen("xrandr -q --current")
-
-        if xrandr then
-            for line in xrandr:lines() do
-                local output = line:match("^([%w-]+) connected ")
-                if output then
-                    outputs[#outputs + 1] = output
-                end
-            end
-            xrandr:close()
-        end
-
-        return outputs
-    end
-
-    local outputs = get_outputs()
-
-    local cmds = {}
-
-    if is_restart() then
-        table.insert(cmds, "xrandr --output " .. table.concat(outputs, " --output ") .. " --off")
-    end
-
-    if #outputs == 2 then
-        table.insert(cmds,
-            "xrandr --dpi 96 --output HDMI-0 --mode 1920x1080 --rate 60 --pos 0x0 --primary --output eDP-1-1 --mode 1920x1080 --rate 120 --pos 1920x0")
-    else
-        table.insert(cmds, "xrandr --dpi 96 --output eDP-1-1 --mode 1920x1080 --rate 120 --primary")
-    end
-
-    for cmd = 1, #cmds do
-        awful.spawn(cmds[cmd], false)
-    end
-end
-
-connect_screen()
-
-local autorun = {
-    app = {
-        "fcitx5",
-        "picom"
-    },
-    cmd = {
-        "~/Projects/Script/python_venv/bin/python ~/Projects/Script/link_dlut.py",
-        "greenclip daemon"
-    }
-}
-
-
-if not is_restart() then
-    for i = 1, #autorun.app do
-        awful.spawn(autorun.app[i], false)
-    end
-
-    for i = 1, #autorun.cmd do
-        awful.spawn.with_shell(autorun.cmd[i])
-    end
-end
--- }}}
