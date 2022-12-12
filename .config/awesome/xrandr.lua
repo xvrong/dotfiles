@@ -17,7 +17,7 @@ local function outputs()
          local output = line:match("^([%w-]+) connected ")
          if output then
             outputs[#outputs + 1] = output
-                                   end
+         end
       end
       xrandr:close()
    end
@@ -39,7 +39,7 @@ local function arrange(out)
       for _, p in pairs(previous) do
          for _, o in pairs(out) do
             if not gtable.hasitem(p, o) then
-               new[#new + 1] = gtable.join(p, {o})
+               new[#new + 1] = gtable.join(p, { o })
             end
          end
       end
@@ -62,7 +62,7 @@ local function menu()
       for i, o in pairs(choice) do
          cmd = cmd .. " --output " .. o .. " --auto"
          if i > 1 then
-            cmd = cmd .. " --right-of " .. choice[i-1]
+            cmd = cmd .. " --right-of " .. choice[i - 1]
          end
       end
       -- Disabled outputs
@@ -89,17 +89,19 @@ local function menu()
 end
 
 -- Display xrandr notifications from choices
-local state = { cid = nil }
+local state = {}
 
-local function naughty_destroy_callback(reason)
-  if reason == naughty.notificationClosedReason.expired or
-     reason == naughty.notificationClosedReason.dismissedByUser then
-    local action = state.index and state.menu[state.index - 1][2]
-    if action then
-      spawn(action, false)
-      state.index = nil
-    end
-  end
+local function naughty_destroy_callback(notification, reason, keep_visible)
+   if reason == naughty.notification_closed_reason.expired or
+       reason == naughty.notification_closed_reason.dismissed_by_user then
+      local action = state.index and state.menu[state.index - 1][2]
+
+      if action then
+         spawn(action, false)
+         state.index = nil
+      end
+   end
+   state.pre = nil
 end
 
 local function xrandr()
@@ -120,12 +122,17 @@ local function xrandr()
    else
       label, action = next[1], next[2]
    end
-   state.cid = naughty.notify({ text = label,
-                                icon = icon_path,
-                                timeout = 4,
-                                screen = mouse.screen,
-                                replaces_id = state.cid,
-                                destroy = naughty_destroy_callback}).id
+   if state.pre == nil then
+      state.pre = naughty.notification {
+         text = label,
+         icon = icon_path,
+         timeout = 4,
+         screen = mouse.screen,
+      }
+      state.pre:connect_signal("destroyed", naughty_destroy_callback)
+   else
+      state.pre.text = label
+   end
 end
 
 return {
@@ -134,4 +141,3 @@ return {
    menu = menu,
    xrandr = xrandr
 }
-
