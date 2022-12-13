@@ -21,7 +21,22 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
+-- {{{ Error handling
+-- Check if awesome encountered an error during startup and fell back to
+-- another config (This code will only ever execute for the fallback config)
+naughty.connect_signal("request::display_error", function(message, startup)
+    naughty.notification {
+        urgency = "critical",
+        title   = "Oops, an error happened" .. (startup and " during startup!" or "!"),
+        message = message
+    }
+end)
+-- }}}
+
 awful.screen.set_auto_dpi_enabled(true)
+
+screen.connect_signal("added", function(s) awesome.restart() end)
+screen.connect_signal("removed", function(s) awesome.restart() end)
 
 local xrandr = require("xrandr")
 -- {{{ Autostart
@@ -66,23 +81,6 @@ if not is_restart() then
         awful.spawn.with_shell(autorun.cmd[i])
     end
 end
-
-if is_restart() then
-    awful.spawn.with_shell("$XDG_CONFIG_HOME/script/display.sh")
-end
--- }}}
-
-
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-naughty.connect_signal("request::display_error", function(message, startup)
-    naughty.notification {
-        urgency = "critical",
-        title   = "Oops, an error happened" .. (startup and " during startup!" or "!"),
-        message = message
-    }
-end)
 -- }}}
 
 -- {{{ Variable definitions

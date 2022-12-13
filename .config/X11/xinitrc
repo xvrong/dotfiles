@@ -21,5 +21,4 @@ fi
 
 /usr/bin/prime-offload
 xmodmap $XDG_CONFIG_HOME/X11/xmodmap
-$XDG_CONFIG_HOME/X11/display.sh
 exec awesome
