@@ -144,7 +144,7 @@ end)
 -- {{{ Wibar
 
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock(" %b%d %T", 0.9)
+mytextclock = wibox.widget.textclock(" %b%d %a %T", 0.9)
 
 local sharedtags = require("sharedtags")
 local tags = sharedtags({
