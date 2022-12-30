@@ -14,6 +14,6 @@ if [[ $number == "1" ]]; then
     fi
 # 3. 如果是2个屏幕，则设置笔记本屏幕在右边，外接屏幕在左边
 else
-    `xrandr --dpi 96 --output HDMI-0 --mode 1920x1080 --rate 60 --pos 0x0 --primary --output eDP-1-1 --mode 1920x1080 --rate 120 --pos 1920x0`
+    `xrandr --dpi 96 --output HDMI-0 --mode 1920x1080 --rate 60 --pos 1920x0 --primary --output eDP-1-1 --mode 1920x1080 --rate 120 --pos 0x0`
 fi
 
