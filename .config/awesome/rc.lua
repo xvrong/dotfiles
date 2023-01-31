@@ -152,6 +152,7 @@ local tags = sharedtags({
     { name = "2 www", screen = 2, layout = awful.layout.layouts[1] },
     { name = "3 misc", screen = 1, layout = awful.layout.layouts[1] },
     { name = "4 chat", screen = 2, layout = awful.layout.layouts[1] },
+    { name = "5 game" , screen = 1, layout = awful.layout.layouts[1] },
 })
 
 screen.connect_signal("request::desktop_decoration", function(s)
@@ -558,6 +559,16 @@ ruled.client.connect_signal("request::rules", function()
 
     ruled.client.append_rule {
         rule       = { class = "QQ" },
+        properties = { tag = tags[4] }
+    }
+    
+    ruled.client.append_rule {
+        rule       = { class = "Steam" },
+        properties = { tag = tags[5] }
+    }
+
+    ruled.client.append_rule {
+        rule       = { class = "weixin" },
         properties = { tag = tags[4] }
     }
 end)
