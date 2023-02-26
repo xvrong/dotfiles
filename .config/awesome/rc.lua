@@ -66,7 +66,7 @@ local autorun = {
     cmd = {
         "fcitx5",
         "picom --daemon",
-        -- "~/Projects/Script/python_venv/bin/python ~/Projects/Script/link_dlut.py",
+        "~/Projects/Script/link_DLUT/python_env_linux/bin/python ~/Projects/Script/link_DLUT/link_dlut.py",
         "greenclip daemon"
     }
 }
@@ -149,10 +149,10 @@ mytextclock = wibox.widget.textclock(" %b%d %a %T", 0.9)
 local sharedtags = require("sharedtags")
 local tags = sharedtags({
     { name = "1 main", screen = 1, layout = awful.layout.layouts[1] },
-    { name = "2 www", screen = 2, layout = awful.layout.layouts[1] },
+    { name = "2 www",  screen = 2, layout = awful.layout.layouts[1] },
     { name = "3 misc", screen = 1, layout = awful.layout.layouts[1] },
     { name = "4 chat", screen = 2, layout = awful.layout.layouts[1] },
-    { name = "5 game" , screen = 1, layout = awful.layout.layouts[1] },
+    { name = "5 game", screen = 1, layout = awful.layout.layouts[1] },
 })
 
 screen.connect_signal("request::desktop_decoration", function(s)
@@ -165,8 +165,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
         screen  = s,
         buttons = {
             awful.button({}, 1, function() awful.layout.inc(1) end),
-            awful.button({}, 3, function() awful.layout.inc(-1) end),
-            awful.button({}, 4, function() awful.layout.inc(-1) end),
+            awful.button({}, 3, function() awful.layout.inc( -1) end),
+            awful.button({}, 4, function() awful.layout.inc( -1) end),
             awful.button({}, 5, function() awful.layout.inc(1) end),
         }
     }
@@ -201,10 +201,11 @@ screen.connect_signal("request::desktop_decoration", function(s)
             --     c:activate { context = "tasklist", action = "toggle_minimization" }
             -- end),
             awful.button({}, 3, function() awful.menu.client_list { theme = { width = 250 } } end),
-            awful.button({}, 4, function() awful.client.focus.byidx(-1) end),
+            awful.button({}, 4, function() awful.client.focus.byidx( -1) end),
             awful.button({}, 5, function() awful.client.focus.byidx(1) end),
         }
     }
+    local battery_widget = require("awesome-wm-widgets.battery-widget.battery")
 
     -- Create the wibox
     s.mywibox = awful.wibar {
@@ -222,6 +223,12 @@ screen.connect_signal("request::desktop_decoration", function(s)
                 layout = wibox.layout.fixed.horizontal,
                 wibox.widget.systray(),
                 mytextclock,
+                battery_widget({
+                    font = beautiful.font,
+                    margin_right = 4,
+                    margin_left = 5,
+                    show_current_level = true
+                }),
                 s.mylayoutbox,
             },
         }
@@ -280,6 +287,17 @@ awful.keyboard.append_global_keybindings({
         { description = "lock screen", group = "awesome" }),
     awful.key({ modkey, "Shift" }, "p", function() xrandr.xrandr() end,
         { description = "manage multiple screen", group = "screen" }),
+
+    -- 调整屏幕亮度
+    awful.key({}, "XF86MonBrightnessUp", function() awful.spawn("xbacklight -inc 5") end,
+        { description = "increase brightness", group = "hotkey" }),
+    awful.key({}, "XF86MonBrightnessDown", function() awful.spawn("xbacklight -dec 5") end,
+        { description = "decrease brightness", group = "hotkeys" }),
+    awful.key({ modkey }, "]", function() awful.spawn("xbacklight -inc 5") end,
+        { description = "increase brightness", group = "hotkeys" }),
+    awful.key({ modkey }, "[", function() awful.spawn("xbacklight -dec 5") end,
+        { description = "decrease brightness", group = "hotkeys" }),
+
 })
 
 -- Tags related keybindings
@@ -302,7 +320,7 @@ awful.keyboard.append_global_keybindings({
     ),
     awful.key({ modkey, }, "k",
         function()
-            awful.client.focus.byidx(-1)
+            awful.client.focus.byidx( -1)
         end,
         { description = "focus previous by index", group = "client" }
     ),
@@ -336,17 +354,17 @@ awful.keyboard.append_global_keybindings({
 awful.keyboard.append_global_keybindings({
     awful.key({ modkey, }, "h", function() awful.client.swap.byidx(1) end,
         { description = "swap with next client by index", group = "client" }),
-    awful.key({ modkey, }, "l", function() awful.client.swap.byidx(-1) end,
+    awful.key({ modkey, }, "l", function() awful.client.swap.byidx( -1) end,
         { description = "swap with previous client by index", group = "client" }),
     -- awful.key({ modkey, }, "u", awful.client.urgent.jumpto,
     --     { description = "jump to urgent client", group = "client" }),
     awful.key({ modkey, "Shift" }, "l", function() awful.tag.incmwfact(0.05) end,
         { description = "increase master width factor", group = "layout" }),
-    awful.key({ modkey, "Shift" }, "h", function() awful.tag.incmwfact(-0.05) end,
+    awful.key({ modkey, "Shift" }, "h", function() awful.tag.incmwfact( -0.05) end,
         { description = "decrease master width factor", group = "layout" }),
     awful.key({ modkey, "Shift" }, "j", function() awful.client.incwfact(0.10) end,
         { description = "increase window factor of client", group = "layout" }),
-    awful.key({ modkey, "Shift" }, "k", function() awful.client.incwfact(-0.10) end,
+    awful.key({ modkey, "Shift" }, "k", function() awful.client.incwfact( -0.10) end,
         { description = "decrease window factor of client", group = "layout" }),
     awful.key({ modkey, "Shift" }, "space", function() awful.layout.inc(1) end,
         { description = "select previous", group = "layout" }),
@@ -561,7 +579,7 @@ ruled.client.connect_signal("request::rules", function()
         rule       = { class = "QQ" },
         properties = { tag = tags[4] }
     }
-    
+
     ruled.client.append_rule {
         rule       = { class = "Steam" },
         properties = { tag = tags[5] }
