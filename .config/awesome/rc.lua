@@ -66,7 +66,7 @@ local autorun = {
     cmd = {
         "fcitx5",
         "picom --daemon",
-        "~/Projects/Script/link_DLUT/python_env_linux/bin/python ~/Projects/Script/link_DLUT/link_dlut.py",
+        "~/workspace/script/link_DLUT/python_env_linux/bin/python ~/workspace/script/link_DLUT/link_dlut.py",
         "greenclip daemon"
     }
 }
@@ -415,7 +415,7 @@ awful.keyboard.append_global_keybindings({
         on_press    = function(index)
             if client.focus then
                 local tag = tags[index]
-                if tag then
+                if tagbind = $mainMod, P, pseudo, # dwindle then
                     client.focus:move_to_tag(tag)
                 end
             end
