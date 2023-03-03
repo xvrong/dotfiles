@@ -1,6 +1,6 @@
 #! /bin/bash
 
-ln -s /data/OneDrive/Projects  ~/Projects
+ln -s /data/workspace          ~/workspace
 ln -s /data/OneDrive/Music     ~/Music
 ln -s /data/OneDrive/Pictures  ~/Pictures
 ln -s /data/OneDrive/Videos    ~/videos
