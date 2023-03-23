@@ -36,4 +36,7 @@ export WLR_NO_HARDWARE_CURSORS=1
 
 export EDITOR=nvim
 
+# 对于诸如 sway 的一些混成器，在运行 Qt 程序时可能会遇到一些功能缺失。例如，KeepassXC 会无法最小化到托盘。通过安装 qt5ct包 并在程序运行前设置好 QT_QPA_PLATFORMTHEME=qt5ct 环境变量，可以解决此问题。
+export QT_QPA_PLATFORMTHEME=qt5ct
+
 exec Hyprland
