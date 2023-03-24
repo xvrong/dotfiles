@@ -415,7 +415,7 @@ awful.keyboard.append_global_keybindings({
         on_press    = function(index)
             if client.focus then
                 local tag = tags[index]
-                if tagbind = $mainMod, P, pseudo, # dwindle then
+                if tag then
                     client.focus:move_to_tag(tag)
                 end
             end

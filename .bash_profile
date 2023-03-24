@@ -4,4 +4,6 @@
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
-exec ~/.config/hypr/wrappedhyprland.sh
+# exec ~/.config/hypr/wrappedhyprland.sh
+
+exec ~/.config/awesome/wrappedawesome.sh
