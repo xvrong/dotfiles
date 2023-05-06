@@ -7,3 +7,6 @@ ln -s /data/OneDrive/Videos    ~/videos
 ln -s /data/OneDrive/Documents ~/Documents
 ln -s /data/OneDrive/Desktop   ~/Desktop
 ln -s /data/Downloads          ~/Downloads
+
+sudo ln -s ~/.config/keyd           /etc/keyd
+sudo ln -s ~/.config/smartdns       /etc/smartdns
