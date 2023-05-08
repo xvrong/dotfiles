@@ -3,5 +3,3 @@
 	name = xv_rong
 [init]
 	defaultBranch = master
-[safe]
-	directory = /opt/flutter
