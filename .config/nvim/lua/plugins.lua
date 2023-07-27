@@ -11,11 +11,13 @@ local ensure_packer = function()
 end
 
 local packer_bootstrap = ensure_packer()
+-- Only required if you have packer configured as `opt`
+vim.cmd [[packadd packer.nvim]]
 
 return require('packer').startup(function(use)
   -- Packer can manage itself
-  use "wbthomason/packer.nvim" 
-  
+  use "wbthomason/packer.nvim"
+
   -- better-escape
   use {
     "max397574/better-escape.nvim",
@@ -26,31 +28,33 @@ return require('packer').startup(function(use)
   use {
     'numToStr/Comment.nvim',
     config = function()
-        require('Comment').setup()
+      require('Comment').setup()
     end,
   }
-  
+
   -- toggleterm
   use {
-      "akinsho/toggleterm.nvim", 
-      tag = '*', 
-      config = function()
-        require("toggleterm").setup()
-      end
+    "akinsho/toggleterm.nvim",
+    tag = '*',
+    config = function()
+      require("toggleterm").setup()
+    end
   }
-  
+
   -- mason
-  use { 
-      "williamboman/mason.nvim",
-      config = function()
-          require("mason").setup()
-      end
+  use {
+    "williamboman/mason.nvim",
+    config = function()
+      require("mason").setup()
+    end
   }
 
-
+  -- using packer.nvim
+  use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
 
   -- 在新环境自动安装所有插件
   if packer_bootstrap then
     require('packer').sync()
   end
+
 end)
