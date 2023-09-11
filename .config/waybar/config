@@ -10,7 +10,7 @@
         "memory",
         "temperature",
         "battery",
-        "wlr/workspaces"
+        "hyprland/workspaces"
     ],
     // "modules-center": [
     //"hyprland/window"
