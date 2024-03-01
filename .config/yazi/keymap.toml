@@ -1,0 +1,10 @@
+[[manager.prepend_keymap]]
+on   = [ "y" ]
+exec = [ "yank", '''
+	shell --confirm 'for path in "$@"; do echo "file://$path"; done | wl-copy -t text/uri-list'
+''' ]
+
+[[input.prepend_keymap]]
+on   = [ "<Esc>" ]
+exec = "close"
+desc = "Cancel input"
