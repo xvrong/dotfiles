@@ -7,6 +7,7 @@ fish_vi_key_bindings
 
 # Created by `pipx` on 2023-11-11 11:06:38
 set PATH $PATH /home/xv_rong/.local/bin
+export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1 # fix conda issue
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!

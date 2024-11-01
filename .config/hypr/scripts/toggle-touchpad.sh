@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 HYPRLAND_DEVICE="cust0001:00-06cb:cda1-touchpad"
 
@@ -13,7 +13,7 @@ enable_touchpad() {
 
   notify-send -u normal "Enabling Touchpad"
 
-  hyprctl keyword "device:$HYPRLAND_DEVICE:enabled" true
+  hyprctl keyword "device:name=$HYPRLAND_DEVICE:enabled" true
 }
 
 disable_touchpad() {
@@ -21,7 +21,7 @@ disable_touchpad() {
 
   notify-send -u normal "Disabling Touchpad"
 
-  hyprctl keyword "device:$HYPRLAND_DEVICE:enabled" false
+  hyprctl keyword "device:name=$HYPRLAND_DEVICE:enabled" false
 }
 
 if ! [ -f "$STATUS_FILE" ]; then
@@ -33,3 +33,4 @@ else
     enable_touchpad
   fi
 fi
+SS
